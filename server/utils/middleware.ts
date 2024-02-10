@@ -11,7 +11,7 @@ type LogicalQuery =
   | { $and: LocationQuery[]; $or?: never };
 type LocationQueryCombined = LocationQuery | LogicalQuery;
 
-const locaitonServiceUid = "plugin::location-plugin.locationServices";
+const locaitonServiceUid = "plugin::strapi-postgis-geometry-plugin.locationServices";
 const createFilterMiddleware = (strapi: Strapi) => {
   const db = strapi.db.connection;
   const modelsWithLocation =

@@ -3,7 +3,7 @@ import { Event } from '@strapi/database/dist/lifecycles';
 import { Subscriber } from '@strapi/database/dist/lifecycles/types';
 import _ from 'lodash';
 
-const locaitonServiceUid = 'plugin::location-plugin.locationServices';
+const locaitonServiceUid = 'plugin::strapi-postgis-geometry-plugin.locationServices';
 
 const createLocationSubscriber = (strapi: Strapi): Subscriber => {
   const db = strapi.db.connection;

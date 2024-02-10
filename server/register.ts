@@ -24,12 +24,12 @@ const createPgExtension = async (db) => {
 };
 
 export default async ({ strapi }: { strapi: Strapi }) => {
-  strapi["location-plugin"] = {
+  strapi["strapi-postgis-geometry-plugin"] = {
     enabled: true,
   };
   if (strapi.config.database.connection.client !== "postgres") {
     strapi.log.info(`Only postgres client type is supported!`);
-    strapi["location-plugin"].enabled = false;
+    strapi["strapi-postgis-geometry-plugin"].enabled = false;
     return;
   }
   const db = knex(strapi.config.database.connection);
@@ -41,7 +41,7 @@ export default async ({ strapi }: { strapi: Strapi }) => {
   const isPostgisAvailable = postgisVersion !== undefined;
   if (!isPostgisAvailable) {
     strapi.log.error(`Error accessing POSTGIS`);
-    strapi["location-plugin"].enabled = false;
+    strapi["strapi-postgis-geometry-plugin"].enabled = false;
     return;
   }
 

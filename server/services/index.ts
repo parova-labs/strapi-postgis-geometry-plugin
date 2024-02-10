@@ -8,7 +8,7 @@ const locationServices = ({ strapi }: { strapi: Strapi }) => ({
           value &&
           typeof value === 'object' &&
           'customField' in value &&
-          value.customField === 'plugin::location-plugin.location'
+          value.customField === 'plugin::strapi-postgis-geometry-plugin.location'
         ) {
           return key;
         } else {
@@ -24,7 +24,7 @@ const locationServices = ({ strapi }: { strapi: Strapi }) => ({
           value &&
           typeof value === 'object' &&
           'customField' in value &&
-          value.customField === 'plugin::location-plugin.polygon'
+          value.customField === 'plugin::strapi-postgis-geometry-plugin.polygon'
         ) {
           return key;
         } else {
@@ -49,7 +49,7 @@ const locationServices = ({ strapi }: { strapi: Strapi }) => ({
               entry &&
               typeof entry === 'object' &&
               'customField' in entry &&
-              entry.customField === 'plugin::location-plugin.location'
+              entry.customField === 'plugin::strapi-postgis-geometry-plugin.location'
             ) {
               return true;
             } else {
@@ -77,7 +77,7 @@ const locationServices = ({ strapi }: { strapi: Strapi }) => ({
               entry &&
               typeof entry === 'object' &&
               'customField' in entry &&
-              entry.customField === 'plugin::location-plugin.polygon'
+              entry.customField === 'plugin::strapi-postgis-geometry-plugin.polygon'
             ) {
               return true;
             } else {

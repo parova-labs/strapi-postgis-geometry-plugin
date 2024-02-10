@@ -14,7 +14,7 @@ export const getLocationQueryParams = (
 ): [number | null, number | null, number] | null => {
   if (
     model?.attributes?.[fieldToFilter]?.customField !==
-    "plugin::location-plugin.location"
+    "plugin::strapi-postgis-geometry-plugin.location"
   ) {
     return null;
   }

@@ -3,11 +3,11 @@ import _ from "lodash";
 import createFilterMiddleware from "./utils/middleware";
 import {Knex} from "knex";
 import {createLocationSubscriber, createPolygonSubscriber} from "./utils/lifecycles";
-const locaitonServiceUid = "plugin::location-plugin.locationServices";
+const locaitonServiceUid = "plugin::strapi-postgis-geometry-plugin.locationServices";
 
 export default async ({ strapi }: { strapi: Strapi }) => {
-  if (!strapi["location-plugin"].enabled) {
-      strapi.log.info(`strapi-location-plugin disabled`);
+  if (!strapi["strapi-postgis-geometry-plugin"].enabled) {
+      strapi.log.info(`strapi-postgis-geometry-plugin disabled`);
     return;
   }
   const db = strapi.db.connection;
