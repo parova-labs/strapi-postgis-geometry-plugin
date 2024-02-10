@@ -1,36 +1,37 @@
-import { GridItem, NumberInput } from "@strapi/design-system";
+import {GridItem, NumberInput} from "@strapi/design-system";
 import React from "react";
+import {Point} from "../types";
+
 const LocationInputForm = ({
-  lat,
-  lng,
-  handleSetLocation,
-}: {
-  lat: number | null;
-  lng: number | null;
-  handleSetLocation: (newValue: [number | null, number | null]) => void;
+                               point,
+                               handleSetLocation,
+                           }: {
+    point: Point,
+    handleSetLocation: (newValue: Point) => void;
 }) => {
-  return (
-    <>
-      <GridItem col={6}>
-        <NumberInput
-          label="Lat"
-          value={lat ? lat : 0}
-          onValueChange={(newValue: number) =>
-            handleSetLocation([newValue, lng])
-          }
-        />
-      </GridItem>
-      <GridItem col={6}>
-        <NumberInput
-          label="Lng"
-          value={lng ? lng : 0}
-          onValueChange={(newValue: number) =>
-            handleSetLocation([lat, newValue])
-          }
-        />
-      </GridItem>
-    </>
-  );
+    const {lat, lng} = point;
+    return (
+        <>
+            <GridItem col={6}>
+                <NumberInput
+                    label="Lat"
+                    value={lat ? lat : 0}
+                    onValueChange={(newValue: number) =>
+                        handleSetLocation({lat: newValue, lng})
+                    }
+                />
+            </GridItem>
+            <GridItem col={6}>
+                <NumberInput
+                    label="Lng"
+                    value={lng ? lng : 0}
+                    onValueChange={(newValue: number) =>
+                        handleSetLocation({lat, lng: newValue})
+                    }
+                />
+            </GridItem>
+        </>
+    );
 };
 
 export default LocationInputForm;

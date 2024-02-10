@@ -39,6 +39,28 @@ export default {
         // declare options here
       },
     });
+    app.customFields.register({
+      name: "polygon",
+      pluginId: pluginId, // the custom field is created by a color-picker plugin
+      type: "json", // the color will be stored as a string
+      intlLabel: {
+        id: `${pluginId}.polygon.label`,
+        defaultMessage: "Polygon",
+      },
+      intlDescription: {
+        id: `${pluginId}.Polygon.description`,
+        defaultMessage: "Select a Polygon",
+      },
+      components: {
+        Input: async () =>
+            import(
+                /* webpackChunkName: "input-component" */ "./components/PolygonInput"
+                ),
+      },
+      options: {
+        // declare options here
+      },
+    });
   },
 
   bootstrap() {},

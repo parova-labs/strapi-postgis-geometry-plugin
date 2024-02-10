@@ -26,6 +26,7 @@ import iconRetina from "leaflet/dist/images/marker-icon-2x.png";
 import _ from "lodash";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import LocationInputForm from "./LocationInputForm";
+import {Point} from "../types";
 
 //@ts-ignore
 const icon = L.icon({
@@ -35,128 +36,125 @@ const icon = L.icon({
   iconAnchor: [12.5, 41],
 });
 
-const parseValue = (value: string): [number | null, number | null] => {
+const parseValue = (value: string): Point => {
   try {
     const object = JSON.parse(value);
 
     if (!object?.lat || !object?.lng) {
-      return [null, null];
+      return {lat: null, lng: null};
     }
-    return [
-      _.pick(object, ["lat", "lng"]).lat,
-      _.pick(object, ["lat", "lng"]).lng,
-    ];
+
+
+    return _.pick(object, ['lat', 'lng']);
+
   } catch (error) {
-    return [null, null];
+    return {lat: null, lng: null};
   }
 };
 
 //@ts-ignore
 const LocationInput = ({ value, onChange, name, attribute }) => {
-  const [defLat, defLng] = [49.195678016117164, 16.608182539182483];
-  const [[lat, lng], setLocation] = useState(parseValue(value));
+  const [defLat, defLng] = [44.4268, 26.1025];
+  const [point, setLocation] = useState(parseValue(value));
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const markerRef = useRef(null);
 
   const eventHandlers = useMemo(
-    () => ({
-      dragend() {
-        const marker = markerRef.current;
-        if (marker != null) {
-          //@ts-ignore
-          const { lat: newLat, lng: newLng } = marker.getLatLng();
-          handleSetLocation([newLat, newLng]);
-        }
-      },
-    }),
-    []
+      () => ({
+        dragend() {
+          const marker = markerRef.current;
+          if (marker != null) {
+            handleSetLocation(_.pick((marker as any).getLatLng(), ['lat', 'lng']));
+          }
+        },
+      }),
+      []
   );
 
-  const handleSetLocation = (newValue: [number | null, number | null]) => {
+  const handleSetLocation = (newValue: Point) => {
     setLocation(newValue);
+
     onChange({
       target: {
         name,
-        value: JSON.stringify({ lat: newValue[0], lng: newValue[1] }),
+        value: JSON.stringify(newValue),
         type: attribute.type,
       },
     });
   };
 
   return (
-    <Box>
-      <Typography fontWeight="bold" variant="pi">
-        {name}
-      </Typography>
-      <Grid gap={5}>
-        <LocationInputForm
-          lat={lat}
-          lng={lng}
-          handleSetLocation={handleSetLocation}
-        />
-        <GridItem col={12}>
-          <Button onClick={() => setIsModalVisible((prev) => !prev)}>
-            Open map
-          </Button>
-          {isModalVisible && (
-            <ModalLayout
-              onClose={() => setIsModalVisible((prev) => !prev)}
-              labelledBy="title"
-            >
-              <ModalHeader>
-                <Typography
-                  fontWeight="bold"
-                  textColor="neutral800"
-                  as="h2"
-                  id="title"
+      <Box>
+        <Typography fontWeight="bold" variant="pi">
+          {name}
+        </Typography>
+        <Grid gap={5}>
+          <LocationInputForm
+              point={point}
+              handleSetLocation={handleSetLocation}
+          />
+          <GridItem col={12}>
+            <Button onClick={() => setIsModalVisible((prev) => !prev)}>
+              Open map
+            </Button>
+            {isModalVisible && (
+                <ModalLayout
+                    onClose={() => setIsModalVisible((prev) => !prev)}
+                    labelledBy="title"
                 >
-                  Title
-                </Typography>
-              </ModalHeader>
-              <ModalBody>
-                <Grid gap={5} className="pb-2">
-                  <LocationInputForm
-                    lat={lat}
-                    lng={lng}
-                    handleSetLocation={handleSetLocation}
+                  <ModalHeader>
+                    <Typography
+                        fontWeight="bold"
+                        textColor="neutral800"
+                        as="h2"
+                        id="title"
+                    >
+                      Title
+                    </Typography>
+                  </ModalHeader>
+                  <ModalBody>
+                    <Grid gap={5} className="pb-2">
+                      <LocationInputForm
+                          point={point}
+                          handleSetLocation={handleSetLocation}
+                      />
+                    </Grid>
+                    <Box paddingTop={6}>
+                      <MapContainer
+                          center={[point.lat ? point.lat : defLat, point.lng ? point.lng : defLng]}
+                          zoom={12}
+                          scrollWheelZoom={false}
+                          style={{ height: "300px" }}
+                      >
+                        <TileLayer
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                        <Marker
+                            draggable
+                            eventHandlers={eventHandlers}
+                            ref={markerRef}
+                            position={[point.lat ? point.lat : defLat, point.lng ? point.lng : defLng]}
+                            icon={icon}
+                        ></Marker>
+                      </MapContainer>
+                    </Box>
+                  </ModalBody>
+                  <ModalFooter
+                      endActions={
+                        <>
+                          <Button onClick={() => setIsModalVisible((prev) => !prev)}>
+                            Ok
+                          </Button>
+                        </>
+                      }
                   />
-                </Grid>
-                <Box paddingTop={6}>
-                  <MapContainer
-                    center={[lat ? lat : defLat, lng ? lng : defLng]}
-                    zoom={12}
-                    scrollWheelZoom={false}
-                    style={{ height: "300px" }}
-                  >
-                    <TileLayer
-                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                    <Marker
-                      draggable
-                      eventHandlers={eventHandlers}
-                      ref={markerRef}
-                      position={[lat ? lat : defLat, lng ? lng : defLng]}
-                      icon={icon}
-                    ></Marker>
-                  </MapContainer>
-                </Box>
-              </ModalBody>
-              <ModalFooter
-                endActions={
-                  <>
-                    <Button onClick={() => setIsModalVisible((prev) => !prev)}>
-                      Ok
-                    </Button>
-                  </>
-                }
-              />
-            </ModalLayout>
-          )}
-        </GridItem>
-      </Grid>
-    </Box>
+                </ModalLayout>
+            )}
+          </GridItem>
+        </Grid>
+      </Box>
   );
 };
 

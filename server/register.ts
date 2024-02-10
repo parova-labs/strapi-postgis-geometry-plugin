@@ -56,5 +56,16 @@ export default async ({ strapi }: { strapi: Strapi }) => {
     },
   });
 
+  strapi.customFields.register({
+    name: "polygon",
+    plugin: pluginId,
+    type: "json",
+    inputSize: {
+      // optional
+      default: 4,
+      isResizable: true,
+    },
+  });
+
   db.destroy();
 };
