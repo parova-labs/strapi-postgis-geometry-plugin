@@ -28,13 +28,23 @@ const createLocationSubscriber = (strapi: Strapi): Subscriber => {
 
           if (!data?.lng || !data?.lat) return;
 
-          await db.raw(`
+          try {
+            await db.raw(`
               UPDATE ${model.tableName}
               SET ${_.snakeCase(
-                locationField
-              )}_geom = ST_SetSRID(ST_MakePoint(${data.lng}, ${data.lat}), 4326)
+              locationField
+            )}_geom = ST_SetSRID(ST_MakePoint(${data.lng}, ${data.lat}), 4326)
               WHERE id = ${id};
           `);
+          } catch (e) {
+            await db.raw(`
+              UPDATE ${model.tableName}
+              SET ${_.snakeCase(
+              locationField
+            )} = NULL
+              WHERE id = ${id};
+            `);
+          }
         })
       );
     },
@@ -47,13 +57,21 @@ const createLocationSubscriber = (strapi: Strapi): Subscriber => {
           const data = params.data[locationField];
           if (!params.where.id || !data?.lng || !data?.lat) return;
 
-          await db.raw(`
+          try {
+            await db.raw(`
             UPDATE ${model.tableName}
             SET ${_.snakeCase(locationField)}_geom = ST_SetSRID(ST_MakePoint(${
-            data.lng
-          }, ${data.lat}), 4326)
+              data.lng
+            }, ${data.lat}), 4326)
             WHERE id = ${params.where.id};
           `);
+          } catch (e) {
+            await db.raw(`
+            UPDATE ${model.tableName}
+            SET ${_.snakeCase(locationField)}_geom = NULL
+            WHERE id = ${params.where.id};
+          `);
+          }
         })
       );
     },
@@ -83,7 +101,8 @@ const createPolygonSubscriber = (strapi: Strapi): Subscriber => {
 
           if (!data.length || !data.every(coord => coord.lat !== null && coord.lng !== null)) return;
             const polygonFieldSnakeCase = _.snakeCase(polygonField);
-          await db.raw(`
+            try {
+              await db.raw(`
               UPDATE ${model.tableName}
               SET ${polygonFieldSnakeCase}_geom = ST_SetSRID(
                     ST_MakePolygon(
@@ -100,6 +119,14 @@ const createPolygonSubscriber = (strapi: Strapi): Subscriber => {
                 4326)
               WHERE id = ${id};
           `);
+            } catch (e) {
+              await db.raw(`
+              UPDATE ${model.tableName}
+              SET ${polygonFieldSnakeCase} = NULL
+              WHERE id = ${id};
+          `);
+            }
+
         })
       );
     },
@@ -117,7 +144,8 @@ const createPolygonSubscriber = (strapi: Strapi): Subscriber => {
           ) return;
 
           const polygonFieldSnakeCase = _.snakeCase(polygonField);
-          await db.raw(`
+          try {
+            await db.raw(`
             UPDATE ${model.tableName}
             SET ${polygonFieldSnakeCase}_geom = ST_SetSRID(
                     ST_MakePolygon(
@@ -134,6 +162,14 @@ const createPolygonSubscriber = (strapi: Strapi): Subscriber => {
                 4326)
             WHERE id = ${params.where.id};
           `);
+          } catch (e) {
+            await db.raw(`
+              UPDATE ${model.tableName}
+              SET ${polygonFieldSnakeCase} = NULL
+              WHERE id = ${params.where.id};
+          `);
+          }
+
         })
       );
     },
